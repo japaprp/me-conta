@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>me conta · sua rede, sua voz</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & TOKENS ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red:    #e8445a;
+  --orange: #f97316;
+  --yellow: #facc15;
+  --cyan:   #22d3ee;
+  --violet: #a78bfa;
+  --green:  #34d399;
+  --bg:     #08081a;
+  --s0:     #0f0f22;
+  --s1:     #151530;
+  --s2:     #1c1c3a;
+  --s3:     #232348;
+  --bd:     rgba(255,255,255,0.07);
+  --bd2:    rgba(255,255,255,0.13);
+  --tx:     #e2e2f0;
+  --muted:  #7070a0;
+  --rad:    16px;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.bg-glow {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 700px 500px at 10% 20%, rgba(232,68,90,.10) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 700px at 90% 10%, rgba(34,211,238,.09) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 600px at 50% 90%, rgba(167,139,250,.09) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 75% 55%, rgba(52,211,153,.07) 0%, transparent 70%);
+  animation: glowDrift 16s ease-in-out infinite alternate;
+}
+@keyframes glowDrift {
+  0%   { filter: hue-rotate(0deg); }
+  50%  { filter: hue-rotate(20deg); }
+  100% { filter: hue-rotate(-15deg); }
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  height: 56px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px;
+  background: rgba(8,8,26,.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--bd);
+}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.55rem; font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--red), var(--orange), var(--yellow));
+  background-size: 200%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: logoFlow 4s linear infinite;
+  white-space: nowrap; flex-shrink: 0;
+}
+@keyframes logoFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.search-wrap {
+  flex: 1; max-width: 360px;
+  position: relative;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--s1); border: 1px solid var(--bd);
+  border-radius: 40px; padding: 7px 14px 7px 36px;
+  color: var(--tx); font-family: 'DM Sans', sans-serif; font-size: .85rem;
+  outline: none; transition: border-color .3s;
+}
+.search-wrap input:focus { border-color: rgba(34,211,238,.45); }
+.search-wrap input::placeholder { color: var(--muted); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: .8rem; pointer-events: none; }
+.topnav { display: flex; align-items: center; gap: 2px; margin: 0 4px; }
+.tn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 5px 14px; border-radius: 10px;
+  cursor: pointer; transition: background .2s;
+  position: relative;
+}
+.tn:hover { background: var(--s1); }
+.tn.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 20%; right: 20%;
+  height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--red), var(--violet));
+}
+.tn-ico { font-size: 1.15rem; }
+.tn-lbl { font-size: .62rem; color: var(--muted); font-weight: 500; }
+.topright { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.tb-ico {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--s1); border: 1px solid var(--bd);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: .95rem;
+  transition: background .2s, transform .2s;
+  position: relative; flex-shrink: 0;
+}
+.tb-ico:hover { background: var(--s2); transform: scale(1.08); }
+.badge {
+  position: absolute; top: -3px; right: -3px;
+  background: var(--red); color: #fff;
+  font-size: .56rem; font-weight: 700;
+  min-width: 16px; height: 16px; padding: 0 3px;
+  border-radius: 8px; border: 2px solid var(--bg);
+  display: flex; align-items: center; justify-content: center;
+}
+.me-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), var(--violet));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .9rem; color: #fff;
+  cursor: pointer; border: 2px solid rgba(232,68,90,.3);
+  transition: border-color .3s; flex-shrink: 0;
+}
+.me-av:hover { border-color: var(--red); }
+
+/* ===== LAYOUT ===== */
+.wrap {
+  max-width: 1280px; margin: 0 auto;
+  padding: 20px 14px;
+  display: grid;
+  grid-template-columns: 258px 1fr 286px;
+  gap: 16px;
+  position: relative; z-index: 1;
+}
+
+/* ===== CARD ===== */
+.card {
+  background: var(--s0);
+  border: 1px solid var(--bd);
+  border-radius: var(--rad);
+  overflow: hidden;
+  transition: border-color .3s;
+}
+.card:hover { border-color: var(--bd2); }
+.ch {
+  padding: 12px 15px;
+  font-family: 'Syne', sans-serif; font-size: .68rem; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: .7px;
+  border-bottom: 1px solid var(--bd);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ch-action {
+  color: var(--cyan); font-size: .7rem; font-weight: 600;
+  text-transform: none; letter-spacing: 0; cursor: pointer;
+}
+.ch-action:hover { text-decoration: underline; }
+
+/* ===== LEFT ===== */
+.cover {
+  height: 82px; position: relative;
+  background: linear-gradient(135deg, var(--red), var(--orange), var(--violet));
+  background-size: 300%;
+  animation: coverFlow 10s linear infinite;
+}
+@keyframes coverFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.edit-cover {
+  position: absolute; top: 7px; right: 7px;
+  background: rgba(0,0,0,.4); backdrop-filter: blur(6px);
+  border: none; color: #fff; border-radius: 7px;
+  padding: 4px 9px; font-size: .68rem; cursor: pointer;
+  transition: background .2s;
+}
+.edit-cover:hover { background: rgba(0,0,0,.6); }
+.prof-av-wrap { position: absolute; bottom: -36px; left: 14px; }
+.prof-av {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), var(--violet));
+  border: 3px solid var(--s0);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; font-weight: 800; color: #fff;
+  cursor: pointer; position: relative;
+}
+.av-online {
+  position: absolute; bottom: 4px; right: 4px;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--green); border: 2px solid var(--s0);
+  box-shadow: 0 0 7px var(--green);
+}
+.prof-body { padding: 42px 15px 14px; }
+.prof-name { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; }
+.prof-handle { font-size: .75rem; color: var(--muted); margin-top: 1px; }
+.prof-bio { font-size: .78rem; color: var(--muted); margin-top: 7px; line-height: 1.55; font-style: italic; }
+.prof-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; margin-top: 13px;
+  background: var(--bd); border-radius: 10px; overflow: hidden;
+}
+.pstat {
+  background: var(--s1); padding: 9px 5px; text-align: center;
+  cursor: pointer; transition: background .2s;
+}
+.pstat:hover { background: var(--s2); }
+.pstat-n {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: .98rem;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.pstat-l { font-size: .6rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+
+.sidenav { padding: 8px; }
+.sn-grp { margin-bottom: 6px; }
+.sn-grp-lbl { padding: 5px 8px; font-size: .6rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .7px; }
+.sni {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 9px;
+  cursor: pointer; font-size: .83rem; font-weight: 500;
+  color: var(--muted); transition: all .2s;
+  position: relative;
+}
+.sni:hover, .sni.on { background: var(--s1); color: var(--tx); }
+.sni.on { color: var(--red); }
+.sni.on::before {
+  content: ''; position: absolute; left: 0; top: 22%; bottom: 22%;
+  width: 3px; border-radius: 2px;
+  background: linear-gradient(180deg, var(--red), var(--violet));
+}
+.sni-ic { font-size: .95rem; width: 20px; text-align: center; }
+.sni-badge {
+  margin-left: auto; background: var(--red); color: #fff;
+  font-size: .58rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 8px;
+}
+
+.karma-wrap { padding: 13px 15px; }
+.karma-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.karma-lbl { font-size: .76rem; font-weight: 600; }
+.karma-val {
+  font-family: 'Syne', sans-serif; font-weight: 700;
+  background: linear-gradient(135deg, var(--green), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.karma-bar { height: 6px; background: var(--s2); border-radius: 3px; overflow: hidden; margin-bottom: 9px; }
+.karma-fill {
+  height: 100%; width: 76%;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+  border-radius: 3px;
+  animation: kf 1.6s ease-out;
+}
+@keyframes kf { from { width: 0; } to { width: 76%; } }
+.chips { display: flex; gap: 5px; flex-wrap: wrap; }
+.chip {
+  padding: 3px 9px; border-radius: 20px;
+  font-size: .67rem; font-weight: 600;
+  display: flex; align-items: center; gap: 3px;
+}
+
+.mood-body { padding: 11px 14px; }
+.mood-lbl { font-size: .74rem; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+.mood-grid { display: flex; gap: 5px; flex-wrap: wrap; }
+.mood-btn {
+  padding: 5px 11px; border-radius: 20px;
+  background: var(--s1); border: 1px solid var(--bd);
+  font-size: .73rem; cursor: pointer; transition: all .2s;
+  color: var(--tx);
+}
+.mood-btn:hover, .mood-btn.on {
+  background: linear-gradient(135deg, var(--red), var(--violet));
+  border-color: transparent; color: #fff;
+}
+
+.visitors { display: flex; gap: 9px; padding: 11px 14px; overflow-x: auto; scrollbar-width: none; }
+.vis { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex-shrink: 0; }
+.vis-av {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .88rem; color: #fff;
+  transition: transform .2s;
+}
+.vis:hover .vis-av { transform: scale(1.1); }
+.vis-nm { font-size: .63rem; color: var(--muted); }
+.vis-tm { font-size: .6rem; color: var(--muted); opacity: .7; }
+
+/* ===== FEED ===== */
+.stories { display: flex; gap: 9px; margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.story { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-shrink: 0; cursor: pointer; }
+.story-ring {
+  width: 54px; height: 54px; border-radius: 50%; padding: 2.5px;
+  animation: ringHue 4s linear infinite;
+}
+.story-ring.ra { background: linear-gradient(135deg, var(--red), var(--orange), var(--yellow)); }
+.story-ring.rb { background: linear-gradient(135deg, var(--cyan), var(--violet)); }
+.story-ring.rc { background: linear-gradient(135deg, var(--green), var(--cyan)); }
+.story-ring.rd { background: linear-gradient(135deg, var(--orange), var(--red)); }
+@keyframes ringHue { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
+.story-in {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: var(--s1);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.05rem; color: #fff;
+  border: 2.5px solid var(--bg);
+}
+.story-nm { font-size: .63rem; color: var(--muted); max-width: 52px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* composer */
+.composer {
+  background: var(--s0); border: 1px solid var(--bd);
+  border-radius: var(--rad); padding: 14px; margin-bottom: 13px;
+}
+.comp-top { display: flex; gap: 10px; }
+.comp-ta {
+  flex: 1; background: var(--s1); border: 1px solid var(--bd);
+  border-radius: 11px; padding: 11px 13px;
+  color: var(--tx); font-family: 'DM Sans', sans-serif; font-size: .88rem;
+  resize: none; outline: none; min-height: 66px; line-height: 1.6;
+  transition: border-color .3s;
+}
+.comp-ta:focus { border-color: rgba(34,211,238,.4); }
+.comp-ta::placeholder { color: var(--muted); }
+.comp-tools {
+  display: flex; gap: 5px; margin-top: 11px;
+  padding-top: 11px; border-top: 1px solid var(--bd);
+  flex-wrap: wrap; align-items: center;
+}
+.ctool {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 11px; border-radius: 8px;
+  background: none; border: 1px solid var(--bd);
+  color: var(--muted); font-family: 'DM Sans', sans-serif;
+  font-size: .76rem; font-weight: 500; cursor: pointer;
+  transition: all .2s;
+}
+.ctool:hover { background: var(--s1); color: var(--tx); border-color: var(--bd2); }
+.priv-sel {
+  background: var(--s1); border: 1px solid var(--bd);
+  border-radius: 8px; padding: 6px 10px;
+  color: var(--muted); font-family: 'DM Sans', sans-serif;
+  font-size: .76rem; outline: none; cursor: pointer;
+}
+.priv-sel option { background: var(--s1); }
+.pub-btn {
+  margin-left: auto; padding: 7px 20px; border-radius: 9px;
+  border: none; background: linear-gradient(135deg, var(--red), var(--violet));
+  color: #fff; font-family: 'DM Sans', sans-serif;
+  font-weight: 600; font-size: .82rem; cursor: pointer;
+  transition: opacity .2s, transform .2s;
+  box-shadow: 0 4px 18px rgba(232,68,90,.25);
+}
+.pub-btn:hover { opacity: .88; transform: scale(1.03); }
+
+/* posts */
+.post {
+  background: var(--s0); border: 1px solid var(--bd);
+  border-radius: var(--rad); margin-bottom: 13px; overflow: hidden;
+  transition: border-color .3s;
+  animation: postIn .4s ease;
+}
+@keyframes postIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+.post:hover { border-color: var(--bd2); }
+.ph { display: flex; align-items: flex-start; gap: 10px; padding: 14px 15px 10px; }
+.ph-inf { flex: 1; }
+.ph-name { font-weight: 600; font-size: .88rem; display: flex; align-items: center; gap: 5px; }
+.v-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--cyan); font-size: .52rem; color: #000; font-weight: 700;
+}
+.ph-meta { font-size: .7rem; color: var(--muted); margin-top: 2px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.feeling-tag {
+  padding: 2px 7px; border-radius: 9px;
+  background: rgba(250,204,21,.1); color: var(--yellow);
+  font-size: .66rem; font-weight: 600;
+}
+.more-btn {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 1.1rem; padding: 3px 6px;
+  border-radius: 6px; transition: all .2s;
+}
+.more-btn:hover { background: var(--s1); color: var(--tx); }
+.pb { padding: 0 15px 12px; font-size: .87rem; line-height: 1.7; }
+.ht { color: var(--cyan); cursor: pointer; }
+.mn { color: var(--violet); cursor: pointer; }
+
+/* media */
+.media { display: grid; gap: 2px; }
+.media.g1 { grid-template-columns: 1fr; }
+.media.g2 { grid-template-columns: 1fr 1fr; }
+.media.g3 { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
+.media.g3 .mi:first-child { grid-row: 1 / 3; }
+.mi {
+  overflow: hidden; cursor: pointer;
+  background: var(--s1); position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.mi-inner {
+  width: 100%; height: 190px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.2rem; transition: transform .35s;
+}
+.media.g3 .mi:first-child .mi-inner { height: 340px; font-size: 4.5rem; }
+.media.g3 .mi-inner { height: 169px; }
+.mi:hover .mi-inner { transform: scale(1.06); }
+.mi-ov {
+  position: absolute; inset: 0; background: rgba(0,0,0,.42);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .25s; font-size: 1.3rem; color: #fff;
+}
+.mi:hover .mi-ov { opacity: 1; }
+
+/* link preview */
+.lnk-prev {
+  margin: 0 15px 12px;
+  border: 1px solid var(--bd); border-radius: 11px;
+  overflow: hidden; cursor: pointer; display: flex;
+  transition: border-color .25s;
+}
+.lnk-prev:hover { border-color: var(--bd2); }
+.lnk-bar { width: 4px; flex-shrink: 0; background: linear-gradient(180deg, var(--cyan), var(--violet)); }
+.lnk-body { padding: 11px 13px; }
+.lnk-dom { font-size: .66rem; color: var(--muted); margin-bottom: 3px; }
+.lnk-title { font-size: .82rem; font-weight: 600; margin-bottom: 3px; }
+.lnk-desc { font-size: .73rem; color: var(--muted); line-height: 1.5; }
+
+/* reactions summary */
+.react-sum {
+  padding: 5px 15px; font-size: .7rem; color: var(--muted);
+  border-top: 1px solid var(--bd);
+  display: flex; align-items: center; gap: 6px;
+}
+.react-faces { display: flex; }
+.rf {
+  width: 19px; height: 19px; border-radius: 50%;
+  background: var(--s2); border: 1.5px solid var(--s0);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .62rem; margin-left: -5px;
+}
+.rf:first-child { margin-left: 0; }
+
+/* post actions */
+.pr { display: flex; gap: 5px; padding: 9px 13px; border-top: 1px solid var(--bd); flex-wrap: wrap; align-items: center; }
+.pr-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 6px 12px; border-radius: 20px;
+  background: var(--s1); border: 1px solid var(--bd);
+  color: var(--muted); font-size: .76rem; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.pr-btn:hover { transform: scale(1.04); }
+.pr-btn.liked { background: rgba(232,68,90,.12); border-color: rgba(232,68,90,.3); color: var(--red); }
+.pr-btn.saved { background: rgba(250,204,21,.10); border-color: rgba(250,204,21,.25); color: var(--yellow); }
+.emojis { display: flex; gap: 3px; margin-left: auto; }
+.ep {
+  padding: 4px 8px; border-radius: 20px;
+  background: var(--s1); border: 1px solid var(--bd);
+  cursor: pointer; font-size: .82rem;
+  transition: transform .2s;
+}
+.ep:hover { transform: scale(1.28); }
+
+/* comments */
+.cmts { padding: 9px 13px; border-top: 1px solid var(--bd); display: none; }
+.cmts.open { display: block; }
+.cmt { display: flex; gap: 8px; margin-bottom: 8px; }
+.cmt-bub {
+  flex: 1; background: var(--s1); border-radius: 11px;
+  padding: 8px 11px; font-size: .8rem; line-height: 1.55;
+}
+.cmt-nm { font-weight: 600; font-size: .76rem; margin-bottom: 3px; }
+.cmt-acts { display: flex; gap: 8px; margin-top: 4px; }
+.cmt-act { font-size: .66rem; color: var(--muted); cursor: pointer; transition: color .2s; }
+.cmt-act:hover { color: var(--tx); }
+.cmt-row { display: flex; gap: 7px; align-items: center; margin-top: 6px; }
+.cmt-inp {
+  flex: 1; background: var(--s1); border: 1px solid var(--bd);
+  border-radius: 20px; padding: 7px 13px;
+  color: var(--tx); font-family: 'DM Sans', sans-serif; font-size: .8rem;
+  outline: none; transition: border-color .3s;
+}
+.cmt-inp:focus { border-color: rgba(34,211,238,.4); }
+.cmt-inp::placeholder { color: var(--muted); }
+.send-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  border: none; color: #fff; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .82rem; flex-shrink: 0;
+  transition: transform .2s;
+}
+.send-btn:hover { transform: scale(1.14); }
+
+/* poll */
+.poll-wrap { padding: 0 15px 13px; }
+.poll-q { font-weight: 600; font-size: .86rem; margin-bottom: 11px; }
+.poll-opt {
+  padding: 9px 11px; border-radius: 9px;
+  background: var(--s1); border: 1px solid var(--bd);
+  margin-bottom: 6px; cursor: pointer;
+  transition: border-color .25s;
+}
+.poll-opt:hover { border-color: var(--bd2); }
+.poll-opt.voted { border-color: rgba(34,211,238,.4); }
+.poll-label { display: flex; justify-content: space-between; font-size: .8rem; margin-bottom: 5px; }
+.poll-bar-bg { height: 6px; background: var(--s2); border-radius: 3px; overflow: hidden; }
+.poll-bar { height: 100%; border-radius: 3px; transition: width .6s ease; }
+.poll-footer { font-size: .7rem; color: var(--muted); margin-top: 8px; }
+
+/* ===== RIGHT ===== */
+.suggest {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 13px; border-bottom: 1px solid var(--bd);
+  transition: background .2s;
+}
+.suggest:last-child { border-bottom: none; }
+.suggest:hover { background: var(--s1); }
+.sug-inf { flex: 1; min-width: 0; }
+.sug-nm { font-weight: 600; font-size: .82rem; }
+.sug-mt { font-size: .68rem; color: var(--muted); margin-top: 1px; }
+.sug-acts { display: flex; gap: 5px; }
+.add-btn {
+  padding: 5px 11px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  border: none; color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: .7rem; font-weight: 600;
+  cursor: pointer; transition: opacity .2s, transform .2s;
+}
+.add-btn:hover { opacity: .85; transform: scale(1.05); }
+.skip-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--s2); border: 1px solid var(--bd);
+  color: var(--muted); cursor: pointer; font-size: .75rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.skip-btn:hover { background: var(--s3); color: var(--tx); }
+
+.comm-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 13px; border-bottom: 1px solid var(--bd);
+  cursor: pointer; transition: background .2s;
+}
+.comm-item:last-child { border-bottom: none; }
+.comm-item:hover { background: var(--s1); }
+.comm-ico {
+  width: 40px; height: 40px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; flex-shrink: 0;
+}
+.comm-inf { flex: 1; min-width: 0; }
+.comm-nm { font-weight: 600; font-size: .81rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.comm-mt { font-size: .68rem; color: var(--muted); margin-top: 2px; }
+.joined-tag {
+  padding: 2px 8px; border-radius: 6px;
+  background: rgba(52,211,153,.1); color: var(--green);
+  font-size: .62rem; font-weight: 600; flex-shrink: 0;
+}
+.join-btn {
+  padding: 5px 10px; border-radius: 8px;
+  background: var(--s2); border: 1px solid var(--bd);
+  color: var(--muted); font-family: 'DM Sans', sans-serif;
+  font-size: .7rem; font-weight: 600; cursor: pointer;
+  transition: all .2s; flex-shrink: 0;
+}
+.join-btn:hover { background: var(--s3); color: var(--tx); border-color: var(--bd2); }
+
+.trend-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 13px; border-bottom: 1px solid var(--bd);
+  cursor: pointer; transition: background .2s;
+}
+.trend-item:last-child { border-bottom: none; }
+.trend-item:hover { background: var(--s1); }
+.trend-n {
+  font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800;
+  min-width: 26px; text-align: center;
+  background: linear-gradient(135deg, var(--red), var(--orange));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.trend-inf { flex: 1; }
+.trend-tag { font-weight: 600; font-size: .82rem; }
+.trend-vol { font-size: .68rem; color: var(--muted); margin-top: 1px; }
+
+.anniv-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 13px; border-bottom: 1px solid var(--bd);
+}
+.anniv-item:last-child { border-bottom: none; }
+.anniv-inf { flex: 1; }
+.anniv-nm { font-weight: 600; font-size: .81rem; }
+.anniv-sub { font-size: .68rem; color: var(--muted); margin-top: 1px; }
+.wish-btn {
+  padding: 5px 10px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--red), var(--orange));
+  border: none; color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: .68rem; font-weight: 600;
+  cursor: pointer; transition: opacity .2s; flex-shrink: 0;
+}
+.wish-btn:hover { opacity: .85; }
+
+.album-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.album-cell {
+  aspect-ratio: 1; overflow: hidden; cursor: pointer;
+  background: var(--s1); position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.album-em { font-size: 2rem; transition: transform .3s; }
+.album-cell:hover .album-em { transform: scale(1.15); }
+.album-ov {
+  position: absolute; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .25s; font-size: 1.1rem; color: #fff;
+}
+.album-cell:hover .album-ov { opacity: 1; }
+
+.scrap-item { display: flex; gap: 9px; padding: 11px 13px; border-bottom: 1px solid var(--bd); }
+.scrap-item:last-child { border-bottom: none; }
+.scrap-b { flex: 1; }
+.scrap-nm { font-weight: 600; font-size: .8rem; }
+.scrap-tx { font-size: .76rem; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+.scrap-tm { font-size: .63rem; color: var(--muted); margin-top: 4px; opacity: .7; }
+.scrap-row { display: flex; gap: 5px; margin-top: 5px; }
+.scrap-act {
+  padding: 3px 8px; border-radius: 6px;
+  background: var(--s2); border: 1px solid var(--bd);
+  font-size: .66rem; color: var(--muted); cursor: pointer; transition: all .2s;
+}
+.scrap-act:hover { background: var(--s3); color: var(--tx); }
+
+.depo-item { padding: 11px 13px; border-bottom: 1px solid var(--bd); }
+.depo-item:last-child { border-bottom: none; }
+.depo-hd { display: flex; gap: 8px; align-items: center; margin-bottom: 7px; }
+.depo-txt {
+  font-size: .78rem; line-height: 1.6; color: var(--muted); font-style: italic;
+  padding: 7px 11px; background: var(--s1); border-radius: 9px;
+  border-left: 3px solid var(--violet);
+}
+
+/* ===== AVATAR HELPERS ===== */
+.av {
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.ava { background: linear-gradient(135deg, var(--red), var(--violet)); }
+.avb { background: linear-gradient(135deg, var(--cyan), var(--violet)); }
+.avc { background: linear-gradient(135deg, var(--orange), var(--red)); }
+.avd { background: linear-gradient(135deg, var(--green), var(--cyan)); }
+.ave { background: linear-gradient(135deg, var(--yellow), var(--orange)); }
+.avf { background: linear-gradient(135deg, var(--violet), var(--green)); }
+
+/* ===== CHAT ===== */
+.chat-wrap { position: fixed; bottom: 22px; right: 22px; z-index: 200; }
+.chat-fab {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  border: none; color: #fff; font-size: 1.35rem;
+  cursor: pointer; position: relative;
+  box-shadow: 0 4px 22px rgba(34,211,238,.35);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .3s;
+  animation: fabP 3s ease-in-out infinite;
+}
+@keyframes fabP {
+  0%, 100% { box-shadow: 0 4px 22px rgba(34,211,238,.35); }
+  50%       { box-shadow: 0 4px 38px rgba(34,211,238,.6); }
+}
+.chat-fab:hover { transform: scale(1.1) rotate(8deg); }
+.fab-b {
+  position: absolute; top: -3px; right: -3px;
+  background: var(--red); color: #fff;
+  font-size: .58rem; font-weight: 700;
+  width: 17px; height: 17px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--bg);
+}
+.chat-panel {
+  position: absolute; bottom: 62px; right: 0;
+  width: 328px;
+  background: var(--s0); border: 1px solid var(--bd);
+  border-radius: 18px; overflow: hidden;
+  display: none; flex-direction: column;
+  box-shadow: 0 20px 70px rgba(0,0,0,.6);
+  animation: panUp .3s ease;
+}
+@keyframes panUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.chat-panel.open { display: flex; }
+.cp-head {
+  padding: 13px 14px;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  display: flex; align-items: center; gap: 9px;
+}
+.cp-title { font-family: 'Syne', sans-serif; font-weight: 700; color: #fff; flex: 1; font-size: .95rem; }
+.cp-acts { display: flex; gap: 5px; }
+.cp-act {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: rgba(255,255,255,.15); border: none;
+  color: #fff; cursor: pointer; font-size: .8rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+.cp-act:hover { background: rgba(255,255,255,.28); }
+.cp-tabs { display: flex; border-bottom: 1px solid var(--bd); }
+.cp-tab {
+  flex: 1; padding: 8px; text-align: center;
+  font-size: .72rem; font-weight: 600; color: var(--muted);
+  cursor: pointer; transition: all .2s;
+  border-bottom: 2px solid transparent;
+}
+.cp-tab.on { color: var(--cyan); border-bottom-color: var(--cyan); }
+.cp-search { padding: 9px 11px; border-bottom: 1px solid var(--bd); }
+.cp-search input {
+  width: 100%; background: var(--s1); border: 1px solid var(--bd);
+  border-radius: 20px; padding: 6px 11px;
+  color: var(--tx); font-family: 'DM Sans', sans-serif; font-size: .78rem; outline: none;
+}
+.cp-search input::placeholder { color: var(--muted); }
+.contact-list { max-height: 250px; overflow-y: auto; scrollbar-width: thin; }
+.contact {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 13px; cursor: pointer; transition: background .2s;
+}
+.contact:hover { background: var(--s1); }
+.c-av-wrap { position: relative; }
+.c-online {
+  position: absolute; bottom: 0; right: 0;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--green); border: 2px solid var(--s0);
+  box-shadow: 0 0 6px var(--green);
+}
+.c-inf { flex: 1; min-width: 0; }
+.c-nm { font-weight: 600; font-size: .82rem; }
+.c-prev { font-size: .71rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.c-time { font-size: .62rem; color: var(--muted); }
+.c-unread {
+  background: var(--red); color: #fff;
+  font-size: .58rem; font-weight: 700;
+  padding: 1px 5px; border-radius: 8px;
+}
+.msg-area { display: none; flex-direction: column; }
+.msg-area.open { display: flex; }
+.msg-head {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 13px; border-bottom: 1px solid var(--bd);
+}
+.msg-back {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 1.05rem; transition: color .2s;
+}
+.msg-back:hover { color: var(--tx); }
+.msg-hd-inf { flex: 1; }
+.msg-hd-nm { font-weight: 600; font-size: .86rem; }
+.msg-hd-st { font-size: .68rem; color: var(--green); }
+.msg-hd-acts { display: flex; gap: 5px; }
+.mha {
+  width: 27px; height: 27px; border-radius: 7px;
+  background: var(--s1); border: 1px solid var(--bd);
+  color: var(--muted); cursor: pointer; font-size: .78rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.mha:hover { background: var(--s2); color: var(--tx); }
+.messages {
+  height: 270px; overflow-y: auto; padding: 11px; display: flex;
+  flex-direction: column; gap: 7px; scrollbar-width: thin;
+}
+.msg {
+  max-width: 78%; padding: 8px 11px; border-radius: 13px;
+  font-size: .8rem; line-height: 1.5;
+  animation: msgIn .22s ease;
+}
+@keyframes msgIn { from { transform: scale(.82); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.msg.them { background: var(--s2); border-radius: 13px 13px 13px 3px; align-self: flex-start; }
+.msg.me { background: linear-gradient(135deg, var(--cyan), var(--violet)); border-radius: 13px 13px 3px 13px; align-self: flex-end; color: #fff; }
+.msg-t { font-size: .58rem; opacity: .6; margin-top: 3px; text-align: right; }
+.typing { display: flex; gap: 4px; padding: 8px 12px; background: var(--s2); border-radius: 13px 13px 13px 3px; align-self: flex-start; }
+.td { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: td 1.2s ease-in-out infinite; }
+.td:nth-child(2) { animation-delay: .2s; }
+.td:nth-child(3) { animation-delay: .4s; }
+@keyframes td { 0%, 100% { transform: scale(.8); opacity: .4; } 50% { transform: scale(1.2); opacity: 1; } }
+.msg-input-row {
+  display: flex; gap: 6px; padding: 9px 11px;
+  border-top: 1px solid var(--bd); align-items: flex-end;
+}
+.msg-inp {
+  flex: 1; background: var(--s1); border: 1px solid var(--bd);
+  border-radius: 13px; padding: 7px 11px;
+  color: var(--tx); font-family: 'DM Sans', sans-serif; font-size: .8rem;
+  outline: none; resize: none; max-height: 78px;
+  transition: border-color .3s;
+}
+.msg-inp:focus { border-color: rgba(34,211,238,.4); }
+.msg-inp::placeholder { color: var(--muted); }
+.msg-ico { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .98rem; transition: color .2s; }
+.msg-ico:hover { color: var(--tx); }
+
+/* ===== NOTIFICATIONS DRAWER ===== */
+.notif-panel {
+  position: fixed; top: 56px; right: 14px; z-index: 150;
+  width: 330px; background: var(--s0); border: 1px solid var(--bd);
+  border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.55);
+  display: none; animation: panUp .3s ease; overflow: hidden;
+}
+.notif-panel.open { display: block; }
+.np-head {
+  padding: 13px 15px; border-bottom: 1px solid var(--bd);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.np-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .93rem; }
+.np-mark { font-size: .72rem; color: var(--cyan); cursor: pointer; }
+.np-mark:hover { text-decoration: underline; }
+.notif-item {
+  display: flex; gap: 9px; padding: 10px 13px;
+  border-bottom: 1px solid var(--bd); cursor: pointer; transition: background .2s;
+  position: relative;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: var(--s1); }
+.notif-item.unread::before {
+  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 55%; border-radius: 2px; background: var(--red);
+}
+.n-av { width: 38px; height: 38px; border-radius: 50%; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: .85rem; }
+.n-type {
+  position: absolute; bottom: -2px; right: -2px;
+  width: 17px; height: 17px; border-radius: 50%;
+  background: var(--s0); border: 1.5px solid var(--s0);
+  display: flex; align-items: center; justify-content: center; font-size: .62rem;
+}
+.n-body { flex: 1; }
+.n-txt { font-size: .78rem; line-height: 1.5; }
+.n-time { font-size: .66rem; color: var(--muted); margin-top: 2px; }
+
+/* ===== LIGHTBOX ===== */
+.lightbox {
+  position: fixed; inset: 0; background: rgba(0,0,0,.92);
+  backdrop-filter: blur(12px); z-index: 500;
+  display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+}
+.lightbox.open { display: flex; }
+.lb-em { font-size: min(16vw, 170px); animation: lbIn .35s ease; }
+@keyframes lbIn { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.lb-close {
+  position: fixed; top: 14px; right: 18px;
+  background: rgba(255,255,255,.1); border: none; color: #fff;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; cursor: pointer; transition: background .2s;
+}
+.lb-close:hover { background: rgba(255,255,255,.22); }
+.lb-nav { display: flex; gap: 12px; }
+.lb-btn {
+  padding: 8px 18px; border-radius: 9px;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+  color: #fff; cursor: pointer; font-size: .9rem; transition: background .2s;
+}
+.lb-btn:hover { background: rgba(255,255,255,.2); }
+
+/* ===== TOAST ===== */
+.toast-stack {
+  position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%);
+  z-index: 700; display: flex; flex-direction: column; gap: 6px;
+  align-items: center; pointer-events: none;
+}
+.toast {
+  background: var(--s1); border: 1px solid var(--bd2);
+  border-radius: 10px; padding: 9px 17px;
+  font-size: .81rem; font-weight: 500; white-space: nowrap;
+  box-shadow: 0 8px 28px rgba(0,0,0,.45);
+  animation: tin .3s ease, tout .3s ease 2.5s forwards;
+}
+@keyframes tin  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes tout { from { opacity: 1; } to   { opacity: 0; } }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 2px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1080px) {
+  .wrap { grid-template-columns: 230px 1fr 260px; }
+}
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: 210px 1fr; }
+  .rcol { display: none; }
+}
+@media (max-width: 620px) {
+  .wrap { grid-template-columns: 1fr; }
+  .lcol { display: none; }
+  .topnav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lb">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <div class="lb-em" id="lbEm">🌊</div>
+  <div class="lb-nav">
+    <button class="lb-btn" onclick="lbNav(-1)">← Anterior</button>
+    <button class="lb-btn" onclick="lbNav(1)">Próxima →</button>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div class="notif-panel" id="notifPanel">
+  <div class="np-head">
+    <span class="np-title">🔔 Notificações</span>
+    <span class="np-mark" onclick="markRead()">Marcar tudo lido</span>
+  </div>
+  <div class="notif-item unread" onclick="toast('❤️ Rafael curtiu sua foto')">
+    <div class="n-av avc" style="width:38px;height:38px;font-size:.85rem">R<div class="n-type">❤️</div></div>
+    <div class="n-body"><div class="n-txt"><b>Rafael Borges</b> curtiu sua foto na praia.</div><div class="n-time">há 5 min</div></div>
+  </div>
+  <div class="notif-item unread" onclick="toast('💬 Luísa comentou!')">
+    <div class="n-av avb" style="width:38px;height:38px;font-size:.85rem">L<div class="n-type">💬</div></div>
+    <div class="n-body"><div class="n-txt"><b>Luísa Mendonça</b> comentou: "Que foto incrível! 😍"</div><div class="n-time">há 18 min</div></div>
+  </div>
+  <div class="notif-item unread" onclick="toast('👤 Julia quer ser sua amiga')">
+    <div class="n-av ave" style="width:38px;height:38px;font-size:.85rem">J<div class="n-type">👤</div></div>
+    <div class="n-body"><div class="n-txt"><b>Julia Ramos</b> quer ser sua amiga.</div><div class="n-time">há 1h</div></div>
+  </div>
+  <div class="notif-item" onclick="toast('🏘️ Sua comunidade cresceu!')">
+    <div class="n-av" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--green));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🎵<div class="n-type">📈</div></div>
+    <div class="n-body"><div class="n-txt">Sua comunidade <b>MPB Brasil</b> ganhou 38 novos membros.</div><div class="n-time">há 3h</div></div>
+  </div>
+  <div class="notif-item" onclick="toast('🎂 Hoje é aniversário de Marcos!')">
+    <div class="n-av avc" style="width:38px;height:38px;font-size:.85rem">M<div class="n-type">🎂</div></div>
+    <div class="n-body"><div class="n-txt">Hoje é aniversário de <b>Marcos Vinicius</b>! 🎉</div><div class="n-time">hoje</div></div>
+  </div>
+</div>
+
+<!-- TOAST STACK -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ====== TOPBAR ====== -->
+<nav class="topbar">
+  <div class="logo">me conta</div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Buscar pessoas, comunidades, posts…" oninput="handleSearch(this.value)">
+  </div>
+  <div class="topnav">
+    <div class="tn active" onclick="setTn(this,'Feed')"><span class="tn-ico">🏠</span><span class="tn-lbl">Feed</span></div>
+    <div class="tn" onclick="setTn(this,'Amigos')"><span class="tn-ico">👥</span><span class="tn-lbl">Amigos</span></div>
+    <div class="tn" onclick="setTn(this,'Fotos')"><span class="tn-ico">📸</span><span class="tn-lbl">Fotos</span></div>
+    <div class="tn" onclick="setTn(this,'Comunidades')"><span class="tn-ico">🏘️</span><span class="tn-lbl">Comunidades</span></div>
+    <div class="tn" onclick="setTn(this,'Jogos')"><span class="tn-ico">🎮</span><span class="tn-lbl">Jogos</span></div>
+  </div>
+  <div class="topright">
+    <div class="tb-ico" onclick="toggleNotif()">🔔<div class="badge" id="notifBadge">3</div></div>
+    <div class="tb-ico" onclick="toggleChat()">💬<div class="badge">2</div></div>
+    <div class="tb-ico" onclick="toast('🛍️ Marketplace em breve!')">🛍️</div>
+    <div class="tb-ico" onclick="toast('⚙️ Configurações em breve!')">⚙️</div>
+    <div class="me-av" onclick="toast('👤 Ver perfil completo')">A</div>
+  </div>
+</nav>
+
+<!-- ====== MAIN LAYOUT ====== -->
+<div class="wrap">
+
+<!-- ===== LEFT COL ===== -->
+<aside class="lcol" style="display:flex;flex-direction:column;gap:13px">
+
+  <!-- Profile Card -->
+  <div class="card" style="padding:0">
+    <div class="cover">
+      <button class="edit-cover" onclick="toast('🖼️ Alterar capa do perfil')">✏️ Editar capa</button>
+      <div class="prof-av-wrap">
+        <div class="prof-av" onclick="toast('📷 Alterar foto de perfil')">
+          🧑<div class="av-online"></div>
+        </div>
+      </div>
+    </div>
+    <div class="prof-body">
+      <div class="prof-name">Ana Carolina</div>
+      <div class="prof-handle">@anacarolina · <span style="color:var(--green);font-size:.71rem">● Online</span></div>
+      <div class="prof-bio">"A vida é muito curta para ficar sem saudade" 🌸</div>
+      <div class="prof-stats">
+        <div class="pstat" onclick="toast('👥 248 amigos')"><div class="pstat-n">248</div><div class="pstat-l">Amigos</div></div>
+        <div class="pstat" onclick="toast('🏘️ 32 comunidades')"><div class="pstat-n">32</div><div class="pstat-l">Comunid.</div></div>
+        <div class="pstat" onclick="toast('⭐ Karma 4.8')"><div class="pstat-n">4.8★</div><div class="pstat-l">Karma</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidenav -->
+  <div class="card" style="padding:0">
+    <div class="sidenav">
+      <div class="sn-grp">
+        <div class="sn-grp-lbl">Principal</div>
+        <div class="sni on" onclick="setSni(this,'Início')"><span class="sni-ic">🏠</span>Início</div>
+        <div class="sni" onclick="setSni(this,'Perfil')"><span class="sni-ic">👤</span>Meu Perfil</div>
+        <div class="sni" onclick="setSni(this,'Recados')"><span class="sni-ic">💌</span>Recados<span class="sni-badge">4</span></div>
+        <div class="sni" onclick="setSni(this,'Depoimentos')"><span class="sni-ic">📝</span>Depoimentos</div>
+        <div class="sni" onclick="setSni(this,'Álbum')"><span class="sni-ic">📸</span>Meu Álbum</div>
+        <div class="sni" onclick="setSni(this,'Vídeos')"><span class="sni-ic">🎬</span>Vídeos</div>
+      </div>
+      <div class="sn-grp">
+        <div class="sn-grp-lbl">Social</div>
+        <div class="sni" onclick="setSni(this,'Comunidades')"><span class="sni-ic">🏘️</span>Comunidades</div>
+        <div class="sni" onclick="setSni(this,'Eventos')"><span class="sni-ic">🎉</span>Eventos</div>
+        <div class="sni" onclick="setSni(this,'Enquetes')"><span class="sni-ic">📊</span>Enquetes</div>
+        <div class="sni" onclick="setSni(this,'Jogos')"><span class="sni-ic">🎮</span>Jogos</div>
+      </div>
+      <div class="sn-grp">
+        <div class="sn-grp-lbl">Conta</div>
+        <div class="sni" onclick="setSni(this,'Configurações')"><span class="sni-ic">⚙️</span>Configurações</div>
+        <div class="sni" onclick="setSni(this,'Privacidade')"><span class="sni-ic">🔒</span>Privacidade</div>
+        <div class="sni" onclick="setSni(this,'Suporte')"><span class="sni-ic">❓</span>Suporte</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Karma -->
+  <div class="card">
+    <div class="ch">⭐ Karma &amp; Badges</div>
+    <div class="karma-wrap">
+      <div class="karma-row"><span class="karma-lbl">Score</span><span class="karma-val">4.8 / 5.0</span></div>
+      <div class="karma-bar"><div class="karma-fill"></div></div>
+      <div class="chips">
+        <div class="chip" style="background:rgba(52,211,153,.12);color:var(--green)">💚 Confiável</div>
+        <div class="chip" style="background:rgba(34,211,238,.12);color:var(--cyan)">💙 Ativo</div>
+        <div class="chip" style="background:rgba(232,68,90,.12);color:var(--red)">❤️ Popular</div>
+        <div class="chip" style="background:rgba(250,204,21,.12);color:var(--yellow)">⭐ Destaque</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mood -->
+  <div class="card">
+    <div class="ch">😊 Meu Humor</div>
+    <div class="mood-body">
+      <div class="mood-lbl">Como você está agora?</div>
+      <div class="mood-grid">
+        <div class="mood-btn on" onclick="setMood(this,'😄 Feliz')">😄 Feliz</div>
+        <div class="mood-btn" onclick="setMood(this,'😌 Tranquilo')">😌 Tranquilo</div>
+        <div class="mood-btn" onclick="setMood(this,'🎉 Animado')">🎉 Animado</div>
+        <div class="mood-btn" onclick="setMood(this,'🤔 Pensativo')">🤔 Pensativo</div>
+        <div class="mood-btn" onclick="setMood(this,'😴 Cansado')">😴 Cansado</div>
+        <div class="mood-btn" onclick="setMood(this,'💪 Motivado')">💪 Motivado</div>
+        <div class="mood-btn" onclick="setMood(this,'😍 Apaixonado')">😍 Apaixonado</div>
+        <div class="mood-btn" onclick="setMood(this,'🤩 Inspirado')">🤩 Inspirado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visitantes -->
+  <div class="card">
+    <div class="ch">👁️ Quem me visitou <span class="ch-action" onclick="toast('👁️ Ver todos os visitantes')">Ver todos</span></div>
+    <div class="visitors">
+      <div class="vis" onclick="toast('📄 Perfil de Marcos')"><div class="vis-av avc" style="width:42px;height:42px;font-size:.88rem">M</div><div class="vis-nm">Marcos</div><div class="vis-tm">há 2h</div></div>
+      <div class="vis" onclick="toast('📄 Perfil de Luísa')"><div class="vis-av avb" style="width:42px;height:42px;font-size:.88rem">L</div><div class="vis-nm">Luísa</div><div class="vis-tm">há 5h</div></div>
+      <div class="vis" onclick="toast('📄 Perfil de Julia')"><div class="vis-av ave" style="width:42px;height:42px;font-size:.88rem">J</div><div class="vis-nm">Julia</div><div class="vis-tm">ontem</div></div>
+      <div class="vis" onclick="toast('📄 Perfil de Rafael')"><div class="vis-av avd" style="width:42px;height:42px;font-size:.88rem">R</div><div class="vis-nm">Rafael</div><div class="vis-tm">ontem</div></div>
+      <div class="vis" onclick="toast('📄 Perfil de Pedro')"><div class="vis-av avf" style="width:42px;height:42px;font-size:.88rem">P</div><div class="vis-nm">Pedro</div><div class="vis-tm">há 2d</div></div>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ===== CENTER ===== -->
+<main style="display:flex;flex-direction:column">
+
+  <!-- Stories -->
+  <div class="stories">
+    <div class="story" onclick="toast('➕ Adicionar status')">
+      <div class="story-ring" style="background:var(--s2);animation:none">
+        <div class="story-in" style="background:var(--s2);font-size:1.4rem;color:var(--muted)">+</div>
+      </div>
+      <div class="story-nm">Seu status</div>
+    </div>
+    <div class="story" onclick="toast('📖 Status de Marcos')"><div class="story-ring rc"><div class="story-in">M</div></div><div class="story-nm">Marcos</div></div>
+    <div class="story" onclick="toast('📖 Status de Luísa')"><div class="story-ring rb" style="animation-delay:-1s"><div class="story-in">L</div></div><div class="story-nm">Luísa</div></div>
+    <div class="story" onclick="toast('📖 Status de Julia')"><div class="story-ring ra" style="animation-delay:-2s"><div class="story-in">J</div></div><div class="story-nm">Julia</div></div>
+    <div class="story" onclick="toast('📖 Status de Rafael')"><div class="story-ring rd" style="animation-delay:-.5s"><div class="story-in">R</div></div><div class="story-nm">Rafael</div></div>
+    <div class="story" onclick="toast('📖 Status de Pedro')"><div class="story-ring rc" style="animation-delay:-1.5s"><div class="story-in">P</div></div><div class="story-nm">Pedro</div></div>
+  </div>
+
+  <!-- Composer -->
+  <div class="composer">
+    <div class="comp-top">
+      <div class="av ava" style="width:40px;height:40px;font-size:.92rem;flex-shrink:0">A</div>
+      <textarea class="comp-ta" id="postTa" placeholder="Me conta o que está rolando, Ana? 😊" rows="3"></textarea>
+    </div>
+    <div class="comp-tools">
+      <button class="ctool" onclick="toast('📸 Selecionar foto')">📸 Foto</button>
+      <button class="ctool" onclick="toast('🎬 Selecionar vídeo')">🎬 Vídeo</button>
+      <button class="ctool" onclick="toast('📍 Adicionar local')">📍 Local</button>
+      <button class="ctool" onclick="toast('🎵 Adicionar música')">🎵 Música</button>
+      <button class="ctool" onclick="toast('📊 Criar enquete')">📊 Enquete</button>
+      <select class="priv-sel" id="privSel">
+        <option>🌍 Público</option>
+        <option>👥 Amigos</option>
+        <option>🔒 Só eu</option>
+      </select>
+      <button class="pub-btn" onclick="publishPost()">Publicar</button>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div id="feed">
+
+    <!-- POST 1 -->
+    <div class="post">
+      <div class="ph">
+        <div class="av avb" style="width:42px;height:42px;font-size:.92rem">L</div>
+        <div class="ph-inf">
+          <div class="ph-name">Luísa Mendonça <span class="v-badge">✓</span></div>
+          <div class="ph-meta"><span>há 23 min</span>·<span>🌍 Público</span><span class="feeling-tag">🎨 Inspirada</span></div>
+        </div>
+        <button class="more-btn" onclick="toast('⋯ Opções do post')">⋯</button>
+      </div>
+      <div class="pb">
+        Finalmente fui à exposição que estava esperando há meses! A arte contemporânea tem esse poder incrível de te fazer sentir coisas que você não consegue nem nomear. 🎨✨<br><br>
+        <span class="ht">#artecontemporanea</span> <span class="ht">#cultura</span> <span class="mn">@museu_arte_sp</span>
+      </div>
+      <div class="media g2">
+        <div class="mi" onclick="openLb(['🎨','🖼️','🏛️','✨'],0)">
+          <div class="mi-inner" style="background:linear-gradient(135deg,#1a1a38,#2d1b69)">🎨</div>
+          <div class="mi-ov">🔍 Ampliar</div>
+        </div>
+        <div class="mi" onclick="openLb(['🎨','🖼️','🏛️','✨'],1)">
+          <div class="mi-inner" style="background:linear-gradient(135deg,#1b2838,#1a1a4a)">🖼️</div>
+          <div class="mi-ov">🔍</div>
+        </div>
+      </div>
+      <div class="react-sum">
+        <div class="react-faces"><div class="rf">❤️</div><div class="rf">🔥</div><div class="rf">👏</div></div>
+        84 reações · 12 comentários · 6 compartilhamentos
+      </div>
+      <div class="pr">
+        <button class="pr-btn" onclick="toggleLike(this)">❤️ 84</button>
+        <button class="pr-btn" onclick="toggleCmt(this)">💬 12</button>
+        <button class="pr-btn" onclick="toast('↗️ Link copiado!')">↗️ Compartilhar</button>
+        <button class="pr-btn" onclick="toggleSave(this)">🔖 Salvar</button>
+        <div class="emojis">
+          <div class="ep" onclick="toast('😮 Reação enviada!')">😮</div>
+          <div class="ep" onclick="toast('🔥 Reação enviada!')">🔥</div>
+          <div class="ep" onclick="toast('👏 Reação enviada!')">👏</div>
+        </div>
+      </div>
+      <div class="cmts">
+        <div class="cmt">
+          <div class="av avd" style="width:30px;height:30px;font-size:.76rem">R</div>
+          <div class="cmt-bub"><div class="cmt-nm">Rafael Borges</div>Que incrível! Qual exposição foi? 🤩<div class="cmt-acts"><span class="cmt-act" onclick="toast('❤️ Curtido!')">❤️ Curtir</span><span class="cmt-act" onclick="toast('↩ Respondendo...')">↩ Responder</span><span class="cmt-act">há 15 min</span></div></div>
+        </div>
+        <div class="cmt">
+          <div class="av avf" style="width:30px;height:30px;font-size:.76rem">P</div>
+          <div class="cmt-bub"><div class="cmt-nm">Pedro Almeida</div>Arte contemporânea é vida! 🎭<div class="cmt-acts"><span class="cmt-act" onclick="toast('❤️ Curtido!')">❤️ Curtir</span><span class="cmt-act" onclick="toast('↩ Respondendo...')">↩ Responder</span><span class="cmt-act">há 8 min</span></div></div>
+        </div>
+        <div class="cmt-row">
+          <div class="av ava" style="width:28px;height:28px;font-size:.72rem">A</div>
+          <input class="cmt-inp" placeholder="Escrever comentário…" onkeypress="if(event.key==='Enter')sendCmt(event.target)">
+          <button class="send-btn" onclick="sendCmt(this.previousElementSibling)">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST 2 -->
+    <div class="post">
+      <div class="ph">
+        <div class="av avc" style="width:42px;height:42px;font-size:.92rem">M</div>
+        <div class="ph-inf">
+          <div class="ph-name">Marcos Vinicius</div>
+          <div class="ph-meta"><span>há 1h 20min</span>·<span>👥 Amigos</span></div>
+        </div>
+        <button class="more-btn" onclick="toast('⋯ Opções do post')">⋯</button>
+      </div>
+      <div class="pb">
+        Saudades da rede social que foi — mas esse <b>me conta</b> tá chegando com tudo! 🚀<br><br>
+        Quem lembra dos <b>scraps</b>, das comunidades hilárias e do contador de visitas? "Eu odeio acordar cedo" tinha mais membros que partido político 😂<br><br>
+        <span class="ht">#nostalgia</span> <span class="ht">#redessociais</span> <span class="ht">#meconta</span>
+      </div>
+      <div class="lnk-prev" onclick="toast('🔗 Abrindo link externo…')">
+        <div class="lnk-bar"></div>
+        <div class="lnk-body">
+          <div class="lnk-dom">📰 g1.globo.com</div>
+          <div class="lnk-title">As redes sociais brasileiras que marcaram uma geração</div>
+          <div class="lnk-desc">Lembra dos anos 2000? Scraps, comunidades e contadores de visitas que definiram uma geração de internautas brasileiros…</div>
+        </div>
+      </div>
+      <div class="react-sum">
+        <div class="react-faces"><div class="rf">❤️</div><div class="rf">😂</div><div class="rf">🔥</div></div>
+        203 reações · 47 comentários · 28 compartilhamentos
+      </div>
+      <div class="pr">
+        <button class="pr-btn liked" onclick="toggleLike(this)">❤️ 203</button>
+        <button class="pr-btn" onclick="toggleCmt(this)">💬 47</button>
+        <button class="pr-btn" onclick="toast('↗️ Link copiado!')">↗️ Compartilhar</button>
+        <button class="pr-btn" onclick="toggleSave(this)">🔖 Salvar</button>
+        <div class="emojis">
+          <div class="ep" onclick="toast('😂 Reação enviada!')">😂</div>
+          <div class="ep" onclick="toast('🔥 Reação enviada!')">🔥</div>
+          <div class="ep" onclick="toast('💯 Reação enviada!')">💯</div>
+        </div>
+      </div>
+      <div class="cmts">
+        <div class="cmt">
+          <div class="av ave" style="width:30px;height:30px;font-size:.76rem">J</div>
+          <div class="cmt-bub"><div class="cmt-nm">Julia Ramos</div>Era tão bom mesmo 😭 O clip de música no perfil era o auge kkkk<div class="cmt-acts"><span class="cmt-act" onclick="toast('❤️ 34 curtidas!')">❤️ 34</span><span class="cmt-act">↩ Responder</span><span class="cmt-act">há 50 min</span></div></div>
+        </div>
+        <div class="cmt-row">
+          <div class="av ava" style="width:28px;height:28px;font-size:.72rem">A</div>
+          <input class="cmt-inp" placeholder="Escrever comentário…" onkeypress="if(event.key==='Enter')sendCmt(event.target)">
+          <button class="send-btn" onclick="sendCmt(this.previousElementSibling)">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST 3 -->
+    <div class="post">
+      <div class="ph">
+        <div class="av avd" style="width:42px;height:42px;font-size:.92rem">R</div>
+        <div class="ph-inf">
+          <div class="ph-name">Rafael Borges <span class="v-badge">✓</span></div>
+          <div class="ph-meta"><span>há 3h</span>·<span>🌍 Público</span><span class="feeling-tag">🌊 Na praia</span></div>
+        </div>
+        <button class="more-btn" onclick="toast('⋯ Opções do post')">⋯</button>
+      </div>
+      <div class="pb">Fim de semana absolutamente perfeito! 🌊☀️ O mar estava incrível e a companhia melhor ainda. Momentos assim são pra guardar pra sempre 💙<br><br><span class="ht">#praia</span> <span class="ht">#verão</span></div>
+      <div class="media g3">
+        <div class="mi" onclick="openLb(['🌊','☀️','🏖️'],0)">
+          <div class="mi-inner" style="background:linear-gradient(135deg,#0a1628,#1a3a5c)">🌊</div>
+          <div class="mi-ov">🔍 Ampliar</div>
+        </div>
+        <div class="mi" onclick="openLb(['🌊','☀️','🏖️'],1)">
+          <div class="mi-inner" style="background:linear-gradient(135deg,#2d1b00,#4a3000)">☀️</div>
+          <div class="mi-ov">🔍</div>
+        </div>
+        <div class="mi" onclick="openLb(['🌊','☀️','🏖️'],2)">
+          <div class="mi-inner" style="background:linear-gradient(135deg,#1a1a0a,#2a2a1a)">🏖️</div>
+          <div class="mi-ov">🔍</div>
+        </div>
+      </div>
+      <div class="react-sum">
+        <div class="react-faces"><div class="rf">😍</div><div class="rf">❤️</div><div class="rf">🌊</div></div>
+        156 reações · 28 comentários
+      </div>
+      <div class="pr">
+        <button class="pr-btn" onclick="toggleLike(this)">❤️ 156</button>
+        <button class="pr-btn" onclick="toggleCmt(this)">💬 28</button>
+        <button class="pr-btn" onclick="toast('↗️ Link copiado!')">↗️ Compartilhar</button>
+        <button class="pr-btn" onclick="toggleSave(this)">🔖 Salvar</button>
+        <div class="emojis">
+          <div class="ep" onclick="toast('😍 Reação enviada!')">😍</div>
+          <div class="ep" onclick="toast('🌊 Reação enviada!')">🌊</div>
+          <div class="ep" onclick="toast('🔥 Reação enviada!')">🔥</div>
+        </div>
+      </div>
+      <div class="cmts">
+        <div class="cmt-row">
+          <div class="av ava" style="width:28px;height:28px;font-size:.72rem">A</div>
+          <input class="cmt-inp" placeholder="Escrever comentário…" onkeypress="if(event.key==='Enter')sendCmt(event.target)">
+          <button class="send-btn" onclick="sendCmt(this.previousElementSibling)">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST 4 — Enquete -->
+    <div class="post">
+      <div class="ph">
+        <div class="av ave" style="width:42px;height:42px;font-size:.92rem">J</div>
+        <div class="ph-inf">
+          <div class="ph-name">Julia Ramos</div>
+          <div class="ph-meta"><span>há 5h</span>·<span>🌍 Público</span></div>
+        </div>
+        <button class="more-btn" onclick="toast('⋯ Opções do post')">⋯</button>
+      </div>
+      <div class="pb">A pergunta que não quer calar 👇</div>
+      <div class="poll-wrap">
+        <div class="poll-q">🍕 Pizza: qual é a sua borda favorita?</div>
+        <div id="pollOpts">
+          <div class="poll-opt" onclick="vote(this,34)">
+            <div class="poll-label"><span>🧀 Borda de queijo</span><span>34%</span></div>
+            <div class="poll-bar-bg"><div class="poll-bar" style="width:34%;background:linear-gradient(90deg,var(--red),var(--orange))"></div></div>
+          </div>
+          <div class="poll-opt" onclick="vote(this,24)">
+            <div class="poll-label"><span>🥓 Borda recheada</span><span>24%</span></div>
+            <div class="poll-bar-bg"><div class="poll-bar" style="width:24%;background:linear-gradient(90deg,var(--cyan),var(--violet))"></div></div>
+          </div>
+          <div class="poll-opt" onclick="vote(this,42)">
+            <div class="poll-label"><span>🍕 Sem borda extra</span><span>42%</span></div>
+            <div class="poll-bar-bg"><div class="poll-bar" style="width:42%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div>
+          </div>
+        </div>
+        <div class="poll-footer">416 votos · Encerra em 2 dias</div>
+      </div>
+      <div class="pr">
+        <button class="pr-btn" onclick="toggleLike(this)">❤️ 89</button>
+        <button class="pr-btn" onclick="toggleCmt(this)">💬 31</button>
+        <button class="pr-btn" onclick="toast('↗️ Link copiado!')">↗️ Compartilhar</button>
+      </div>
+      <div class="cmts">
+        <div class="cmt-row">
+          <div class="av ava" style="width:28px;height:28px;font-size:.72rem">A</div>
+          <input class="cmt-inp" placeholder="Escrever comentário…" onkeypress="if(event.key==='Enter')sendCmt(event.target)">
+          <button class="send-btn" onclick="sendCmt(this.previousElementSibling)">➤</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /feed -->
+</main>
+
+<!-- ===== RIGHT COL ===== -->
+<aside class="rcol" style="display:flex;flex-direction:column;gap:13px">
+
+  <!-- Sugestões -->
+  <div class="card">
+    <div class="ch">👥 Sugestões <span class="ch-action" onclick="toast('👥 Ver mais sugestões')">Ver mais</span></div>
+    <div class="suggest">
+      <div class="av avf" style="width:40px;height:40px;font-size:.88rem">C</div>
+      <div class="sug-inf"><div class="sug-nm">Carla Souza</div><div class="sug-mt">👥 14 amigos em comum</div></div>
+      <div class="sug-acts">
+        <button class="add-btn" onclick="addFriend(this,'Carla')">+ Adicionar</button>
+        <button class="skip-btn" onclick="skipSuggest(this)">✕</button>
+      </div>
+    </div>
+    <div class="suggest">
+      <div class="av avc" style="width:40px;height:40px;font-size:.88rem">T</div>
+      <div class="sug-inf"><div class="sug-nm">Thiago Lima</div><div class="sug-mt">👥 8 amigos em comum</div></div>
+      <div class="sug-acts">
+        <button class="add-btn" onclick="addFriend(this,'Thiago')">+ Adicionar</button>
+        <button class="skip-btn" onclick="skipSuggest(this)">✕</button>
+      </div>
+    </div>
+    <div class="suggest">
+      <div class="av avb" style="width:40px;height:40px;font-size:.88rem">B</div>
+      <div class="sug-inf"><div class="sug-nm">Beatriz Santos</div><div class="sug-mt">👥 22 amigos em comum</div></div>
+      <div class="sug-acts">
+        <button class="add-btn" onclick="addFriend(this,'Beatriz')">+ Adicionar</button>
+        <button class="skip-btn" onclick="skipSuggest(this)">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comunidades -->
+  <div class="card">
+    <div class="ch">🏘️ Comunidades <span class="ch-action" onclick="toast('🏘️ Explorar todas')">Explorar</span></div>
+    <div class="comm-item" onclick="toast('🎵 Abrindo MPB Brasil…')">
+      <div class="comm-ico" style="background:rgba(232,68,90,.1)">🎵</div>
+      <div class="comm-inf"><div class="comm-nm">MPB Brasil</div><div class="comm-mt">127k membros · 🔥 Ativa</div></div>
+      <span class="joined-tag">✓ Membro</span>
+    </div>
+    <div class="comm-item" onclick="toast('😴 Comunidade clássica!')">
+      <div class="comm-ico" style="background:rgba(34,211,238,.09)">😴</div>
+      <div class="comm-inf"><div class="comm-nm">Eu odeio acordar cedo</div><div class="comm-mt">4.2M membros · 🔥 Muito ativa</div></div>
+      <span class="joined-tag">✓ Membro</span>
+    </div>
+    <div class="comm-item" onclick="joinComm(this,'Pizza Lovers BR')">
+      <div class="comm-ico" style="background:rgba(249,115,22,.1)">🍕</div>
+      <div class="comm-inf"><div class="comm-nm">Pizza Lovers BR</div><div class="comm-mt">892k membros</div></div>
+      <button class="join-btn">+ Entrar</button>
+    </div>
+    <div class="comm-item" onclick="joinComm(this,'Devs Brasil')">
+      <div class="comm-ico" style="background:rgba(52,211,153,.09)">💻</div>
+      <div class="comm-inf"><div class="comm-nm">Devs Brasil</div><div class="comm-mt">340k membros</div></div>
+      <button class="join-btn">+ Entrar</button>
+    </div>
+    <div class="comm-item" onclick="joinComm(this,'Viagens pelo Brasil')">
+      <div class="comm-ico" style="background:rgba(167,139,250,.09)">✈️</div>
+      <div class="comm-inf"><div class="comm-nm">Viagens pelo Brasil</div><div class="comm-mt">1.1M membros</div></div>
+      <button class="join-btn">+ Entrar</button>
+    </div>
+  </div>
+
+  <!-- Aniversários -->
+  <div class="card">
+    <div class="ch">🎂 Aniversários</div>
+    <div class="anniv-item">
+      <div class="av avc" style="width:36px;height:36px;font-size:.82rem">M</div>
+      <div class="anniv-inf"><div class="anniv-nm">Marcos Vinicius 🎉</div><div class="anniv-sub">Hoje é o aniversário dele!</div></div>
+      <button class="wish-btn" onclick="toast('🎂 Parabéns enviado para Marcos!')">🎂 Parabenizar</button>
+    </div>
+    <div class="anniv-item">
+      <div class="av avf" style="width:36px;height:36px;font-size:.82rem">P</div>
+      <div class="anniv-inf"><div class="anniv-nm">Pedro Almeida</div><div class="anniv-sub">Amanhã é o aniversário dele</div></div>
+      <button class="wish-btn" onclick="toast('🔔 Lembrete criado para Pedro!')">🔔 Lembrar</button>
+    </div>
+  </div>
+
+  <!-- Trending -->
+  <div class="card">
+    <div class="ch">🔥 Em alta agora</div>
+    <div class="trend-item" onclick="toast('#meconta está bombando!')"><div class="trend-n">1</div><div class="trend-inf"><div class="trend-tag">#meconta</div><div class="trend-vol">↑ 89.4k posts hoje</div></div></div>
+    <div class="trend-item" onclick="toast('#verao2025 em alta!')"><div class="trend-n">2</div><div class="trend-inf"><div class="trend-tag">#verao2025</div><div class="trend-vol">↑ 42.1k posts</div></div></div>
+    <div class="trend-item" onclick="toast('#artecontemporanea trending!')"><div class="trend-n">3</div><div class="trend-inf"><div class="trend-tag">#artecontemporanea</div><div class="trend-vol">↑ 28.7k posts</div></div></div>
+    <div class="trend-item" onclick="toast('#nostalgia trending!')"><div class="trend-n">4</div><div class="trend-inf"><div class="trend-tag">#nostalgia</div><div class="trend-vol">↑ 19.2k posts</div></div></div>
+  </div>
+
+  <!-- Álbum -->
+  <div class="card">
+    <div class="ch">📸 Meu Álbum <span class="ch-action" onclick="toast('📸 Ver álbum completo')">Ver tudo</span></div>
+    <div class="album-grid">
+      <div class="album-cell" onclick="openLb(['🌊','🎨','🌳','🌇','🎵','🏔️'],0)"><div class="album-em">🌊</div><div class="album-ov">🔍</div></div>
+      <div class="album-cell" onclick="openLb(['🌊','🎨','🌳','🌇','🎵','🏔️'],1)"><div class="album-em">🎨</div><div class="album-ov">🔍</div></div>
+      <div class="album-cell" onclick="openLb(['🌊','🎨','🌳','🌇','🎵','🏔️'],2)"><div class="album-em">🌳</div><div class="album-ov">🔍</div></div>
+      <div class="album-cell" onclick="openLb(['🌊','🎨','🌳','🌇','🎵','🏔️'],3)"><div class="album-em">🌇</div><div class="album-ov">🔍</div></div>
+      <div class="album-cell" onclick="openLb(['🌊','🎨','🌳','🌇','🎵','🏔️'],4)"><div class="album-em">🎵</div><div class="album-ov">🔍</div></div>
+      <div class="album-cell" onclick="toast('📸 +48 fotos no álbum')" style="position:relative">
+        <div class="album-em" style="opacity:.35">🏔️</div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700">+48</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recados -->
+  <div class="card">
+    <div class="ch">💌 Recados <span class="ch-action" onclick="toast('💌 Ver todos os recados')">Ver todos</span></div>
+    <div class="scrap-item">
+      <div class="av avc" style="width:32px;height:32px;font-size:.78rem">M</div>
+      <div class="scrap-b">
+        <div class="scrap-nm">Marcos Vinicius</div>
+        <div class="scrap-tx">Vai aparecer no aniversário da Luísa sábado? 🎉</div>
+        <div class="scrap-tm">há 2h</div>
+        <div class="scrap-row">
+          <div class="scrap-act" onclick="toast('💌 Respondendo Marcos…')">↩ Responder</div>
+          <div class="scrap-act" onclick="toast('❤️ Curtido!')">❤️ Curtir</div>
+        </div>
+      </div>
+    </div>
+    <div class="scrap-item">
+      <div class="av avf" style="width:32px;height:32px;font-size:.78rem">P</div>
+      <div class="scrap-b">
+        <div class="scrap-nm">Pedro Almeida</div>
+        <div class="scrap-tx">Saudades! Tá sumida hein kkk 😄 Precisamos marcar um café!</div>
+        <div class="scrap-tm">ontem</div>
+        <div class="scrap-row">
+          <div class="scrap-act" onclick="toast('💌 Respondendo Pedro…')">↩ Responder</div>
+          <div class="scrap-act" onclick="toast('❤️ Curtido!')">❤️ Curtir</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px 13px">
+      <div style="display:flex;gap:7px;align-items:center">
+        <div class="av ava" style="width:28px;height:28px;font-size:.7rem">A</div>
+        <input class="cmt-inp" placeholder="Deixar um recado…" onkeypress="if(event.key==='Enter'){toast('💌 Recado enviado!');this.value=''}">
+        <button class="send-btn" onclick="toast('💌 Recado enviado!')">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Depoimentos -->
+  <div class="card">
+    <div class="ch">📝 Depoimentos <span class="ch-action" onclick="toast('📝 Ver todos')">Ver todos</span></div>
+    <div class="depo-item">
+      <div class="depo-hd">
+        <div class="av avb" style="width:30px;height:30px;font-size:.74rem">L</div>
+        <div><div style="font-weight:600;font-size:.78rem">Luísa Mendonça</div><div style="font-size:.66rem;color:var(--muted)">há 3 dias</div></div>
+      </div>
+      <div class="depo-txt">Ana é uma das pessoas mais genuínas que já conheci. Sempre com um sorriso e disposição pra ajudar. Sorte de ter você na minha vida! 💜</div>
+    </div>
+    <div class="depo-item">
+      <div class="depo-hd">
+        <div class="av avd" style="width:30px;height:30px;font-size:.74rem">R</div>
+        <div><div style="font-weight:600;font-size:.78rem">Rafael Borges</div><div style="font-size:.66rem;color:var(--muted)">há 1 semana</div></div>
+      </div>
+      <div class="depo-txt">Criativa, divertida e com aquela energia contagiante. Obrigado por tornar os dias mais coloridos! 🎨</div>
+    </div>
+    <div style="padding:10px 13px">
+      <button style="width:100%;padding:8px;border-radius:9px;background:var(--s1);border:1px solid var(--bd);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.76rem;cursor:pointer;transition:background .2s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='var(--s1)'" onclick="toast('📝 Escrever depoimento…')">✍️ Escrever depoimento</button>
+    </div>
+  </div>
+
+</aside>
+</div><!-- /wrap -->
+
+<!-- ====== CHAT ====== -->
+<div class="chat-wrap">
+  <div class="chat-panel" id="chatPanel">
+    <div class="cp-head">
+      <span>💬</span>
+      <span class="cp-title" id="cpTitle">Mensagens</span>
+      <div class="cp-acts">
+        <button class="cp-act" onclick="toast('✏️ Nova conversa')">✏️</button>
+        <button class="cp-act" onclick="toggleChat()">✕</button>
+      </div>
+    </div>
+    <div class="cp-tabs">
+      <div class="cp-tab on" onclick="showContacts(this)">Recentes</div>
+      <div class="cp-tab" onclick="toast('🟢 3 contatos online');switchTab(this)">Online (3)</div>
+      <div class="cp-tab" onclick="toast('👥 Grupos em breve!');switchTab(this)">Grupos</div>
+    </div>
+    <div class="cp-search"><input type="text" placeholder="🔍 Buscar conversa…" oninput="filterContacts(this.value)"></div>
+    <div class="contact-list" id="contactList">
+      <div class="contact" data-name="Marcos" onclick="openDm('Marcos','avc','Online agora',['Vai aparecer no sábado?? 🎉','O aniversário vai ser incrível!'])">
+        <div class="c-av-wrap"><div class="av avc" style="width:36px;height:36px;font-size:.86rem">M</div><div class="c-online"></div></div>
+        <div class="c-inf"><div class="c-nm">Marcos Vinicius</div><div class="c-prev">Vai aparecer no sábado?? 🎉</div></div>
+        <div class="c-meta"><div class="c-time">há 2h</div><div class="c-unread">2</div></div>
+      </div>
+      <div class="contact" data-name="Luísa" onclick="openDm('Luísa','avb','Online agora',['Obrigada pela curtida! 😊','Precisamos nos ver logo!'])">
+        <div class="c-av-wrap"><div class="av avb" style="width:36px;height:36px;font-size:.86rem">L</div><div class="c-online"></div></div>
+        <div class="c-inf"><div class="c-nm">Luísa Mendonça</div><div class="c-prev">Obrigada pela curtida! 😊</div></div>
+        <div class="c-meta"><div class="c-time">há 5h</div></div>
+      </div>
+      <div class="contact" data-name="Rafael" onclick="openDm('Rafael','avd','Visto há 1h',['kkkkk verdade demais!','Esse me conta tá incrível!'])">
+        <div class="c-av-wrap"><div class="av avd" style="width:36px;height:36px;font-size:.86rem">R</div></div>
+        <div class="c-inf"><div class="c-nm">Rafael Borges</div><div class="c-prev">kkkkk verdade demais!</div></div>
+        <div class="c-meta"><div class="c-time">ontem</div></div>
+      </div>
+      <div class="contact" data-name="Julia" onclick="openDm('Julia','ave','Visto há 3h',['Era tão bom mesmo 😭','Vamos combinar de sair!'])">
+        <div class="c-av-wrap"><div class="av ave" style="width:36px;height:36px;font-size:.86rem">J</div></div>
+        <div class="c-inf"><div class="c-nm">Julia Ramos</div><div class="c-prev">Era tão bom mesmo 😭</div></div>
+        <div class="c-meta"><div class="c-time">ontem</div></div>
+      </div>
+      <div class="contact" data-name="Pedro" onclick="openDm('Pedro','avf','Visto há 2d',['Precisamos marcar um café!','Tô com saudades!'])">
+        <div class="c-av-wrap"><div class="av avf" style="width:36px;height:36px;font-size:.86rem">P</div></div>
+        <div class="c-inf"><div class="c-nm">Pedro Almeida</div><div class="c-prev">Precisamos marcar um café!</div></div>
+        <div class="c-meta"><div class="c-time">há 2d</div></div>
+      </div>
+    </div>
+    <div class="msg-area" id="msgArea">
+      <div class="msg-head">
+        <button class="msg-back" onclick="backToContacts()">←</button>
+        <div class="msg-hd-inf">
+          <div class="msg-hd-nm" id="dmName">Marcos</div>
+          <div class="msg-hd-st" id="dmSt">● Online agora</div>
+        </div>
+        <div class="msg-hd-acts">
+          <div class="mha" onclick="toast('📞 Chamada de voz')">📞</div>
+          <div class="mha" onclick="toast('🎥 Vídeo chamada')">🎥</div>
+          <div class="mha" onclick="toast('👤 Ver perfil')">👤</div>
+        </div>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="msg-input-row">
+        <button class="msg-ico" onclick="toast('😊 Emojis')">😊</button>
+        <textarea class="msg-inp" id="msgInp" placeholder="Mensagem…" rows="1" onkeypress="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+        <button class="msg-ico" onclick="toast('📎 Anexar arquivo')">📎</button>
+        <button class="send-btn" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+  <button class="chat-fab" onclick="toggleChat()">💬<div class="fab-b">2</div></button>
+</div>
+
+<script>
+/* ─── TOAST ─── */
+function toast(msg) {
+  const s = document.getElementById('toastStack');
+  const d = document.createElement('div');
+  d.className = 'toast';
+  d.textContent = msg;
+  s.appendChild(d);
+  setTimeout(() => d.remove(), 3000);
+}
+
+/* ─── TOP NAV ─── */
+function setTn(el, name) {
+  document.querySelectorAll('.tn').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  toast('📄 ' + name);
+}
+
+/* ─── SIDE NAV ─── */
+function setSni(el, name) {
+  document.querySelectorAll('.sni').forEach(x => x.classList.remove('on'));
+  el.classList.add('on');
+  toast('📄 ' + name);
+}
+
+/* ─── SEARCH ─── */
+let stimer;
+function handleSearch(v) {
+  clearTimeout(stimer);
+  if (!v.trim()) return;
+  stimer = setTimeout(() => toast('🔍 Buscando: "' + v + '"'), 700);
+}
+
+/* ─── NOTIFICATIONS ─── */
+let notifOpen = false;
+function toggleNotif() {
+  notifOpen = !notifOpen;
+  document.getElementById('notifPanel').classList.toggle('open', notifOpen);
+  if (notifOpen && chatOpen) toggleChat();
+}
+function markRead() {
+  document.querySelectorAll('.notif-item.unread').forEach(n => n.classList.remove('unread'));
+  const b = document.getElementById('notifBadge');
+  if (b) b.textContent = '0';
+  toast('✅ Tudo marcado como lido');
+}
+document.addEventListener('click', function(e) {
+  if (notifOpen && !e.target.closest('.notif-panel') && !e.target.closest('.tb-ico')) {
+    notifOpen = false;
+    document.getElementById('notifPanel').classList.remove('open');
+  }
+});
+
+/* ─── LIKE ─── */
+function toggleLike(btn) {
+  btn.classList.toggle('liked');
+  const n = parseInt(btn.textContent.replace(/\D/g, ''));
+  btn.innerHTML = btn.classList.contains('liked') ? '❤️ ' + (n + 1) : '❤️ ' + (n - 1);
+  if (btn.classList.contains('liked')) toast('❤️ Curtido!');
+}
+
+/* ─── SAVE ─── */
+function toggleSave(btn) {
+  btn.classList.toggle('saved');
+  btn.innerHTML = btn.classList.contains('saved') ? '🔖 Salvo' : '🔖 Salvar';
+  toast(btn.classList.contains('saved') ? '🔖 Post salvo!' : '🔖 Removido dos salvos');
+}
+
+/* ─── COMMENTS ─── */
+function toggleCmt(btn) {
+  const cmts = btn.closest('.post').querySelector('.cmts');
+  cmts.classList.toggle('open');
+  if (cmts.classList.contains('open')) {
+    const inp = cmts.querySelector('.cmt-inp');
+    if (inp) inp.focus();
+  }
+}
+function sendCmt(input) {
+  const txt = input.value.trim();
+  if (!txt) return;
+  const section = input.closest('.cmts');
+  const row = input.closest('.cmt-row');
+  const d = document.createElement('div');
+  d.className = 'cmt';
+  d.innerHTML = '<div class="av ava" style="width:30px;height:30px;font-size:.76rem">A</div>'
+    + '<div class="cmt-bub"><div class="cmt-nm">Ana Carolina</div>' + escHtml(txt)
+    + '<div class="cmt-acts"><span class="cmt-act" onclick="toast(\'❤️ Curtido!\')">❤️ Curtir</span>'
+    + '<span class="cmt-act" onclick="toast(\'↩ Respondendo...\')">↩ Responder</span>'
+    + '<span class="cmt-act">agora</span></div></div>';
+  section.insertBefore(d, row);
+  input.value = '';
+  toast('💬 Comentário publicado!');
+}
+
+/* ─── PUBLISH POST ─── */
+function publishPost() {
+  const ta = document.getElementById('postTa');
+  const txt = ta.value.trim();
+  if (!txt) { toast('✏️ Escreva algo antes de publicar!'); return; }
+  const priv = document.getElementById('privSel').value;
+  const formatted = escHtml(txt)
+    .replace(/(#\w+)/g, '<span class="ht">$1</span>')
+    .replace(/(@\w+)/g, '<span class="mn">$1</span>');
+  const feed = document.getElementById('feed');
+  const post = document.createElement('div');
+  post.className = 'post';
+  post.innerHTML =
+    '<div class="ph">'
+    + '<div class="av ava" style="width:42px;height:42px;font-size:.92rem">A</div>'
+    + '<div class="ph-inf"><div class="ph-name">Ana Carolina</div>'
+    + '<div class="ph-meta"><span>agora</span>·<span>' + escHtml(priv) + '</span></div></div>'
+    + '<button class="more-btn" onclick="toast(\'⋯ Opções do post\')">⋯</button></div>'
+    + '<div class="pb">' + formatted + '</div>'
+    + '<div class="pr">'
+    + '<button class="pr-btn" onclick="toggleLike(this)">❤️ 0</button>'
+    + '<button class="pr-btn" onclick="toggleCmt(this)">💬 0</button>'
+    + '<button class="pr-btn" onclick="toast(\'↗️ Link copiado!\')">↗️ Compartilhar</button>'
+    + '<button class="pr-btn" onclick="toggleSave(this)">🔖 Salvar</button></div>'
+    + '<div class="cmts"><div class="cmt-row">'
+    + '<div class="av ava" style="width:28px;height:28px;font-size:.72rem">A</div>'
+    + '<input class="cmt-inp" placeholder="Escrever comentário…" onkeypress="if(event.key===\'Enter\')sendCmt(event.target)">'
+    + '<button class="send-btn" onclick="sendCmt(this.previousElementSibling)">➤</button></div></div>';
+  feed.insertBefore(post, feed.firstChild);
+  ta.value = '';
+  toast('✅ Post publicado!');
+}
+
+/* ─── POLL ─── */
+function vote(opt) {
+  document.querySelectorAll('#pollOpts .poll-opt').forEach(o => o.classList.remove('voted'));
+  opt.classList.add('voted');
+  toast('🗳️ Voto registrado!');
+}
+
+/* ─── MOOD ─── */
+function setMood(btn, mood) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  toast(mood + ' — humor atualizado!');
+}
+
+/* ─── FRIENDS ─── */
+function addFriend(btn, name) {
+  btn.textContent = '✓ Solicitado';
+  btn.style.background = 'var(--s2)';
+  btn.style.color = 'var(--muted)';
+  btn.style.border = '1px solid var(--bd)';
+  btn.onclick = function() { toast('👥 Solicitação para ' + name + ' cancelada'); };
+  toast('👥 Solicitação enviada para ' + name + '!');
+}
+function skipSuggest(btn) {
+  btn.closest('.suggest').remove();
+  toast('✕ Sugestão removida');
+}
+
+/* ─── COMMUNITY ─── */
+function joinComm(el, name) {
+  const btn = el.querySelector('.join-btn');
+  if (btn) {
+    const span = document.createElement('span');
+    span.className = 'joined-tag';
+    span.textContent = '✓ Membro';
+    btn.replaceWith(span);
+  }
+  toast('🏘️ Você entrou em: ' + name);
+}
+
+/* ─── LIGHTBOX ─── */
+let lbArr = [], lbIdx = 0;
+function openLb(arr, idx) {
+  lbArr = arr; lbIdx = idx;
+  document.getElementById('lbEm').textContent = arr[idx];
+  document.getElementById('lb').classList.add('open');
+}
+function closeLb() { document.getElementById('lb').classList.remove('open'); }
+function lbNav(d) {
+  lbIdx = (lbIdx + d + lbArr.length) % lbArr.length;
+  const em = document.getElementById('lbEm');
+  em.style.animation = 'none';
+  void em.offsetWidth;
+  em.style.animation = '';
+  em.textContent = lbArr[lbIdx];
+}
+document.getElementById('lb').addEventListener('click', function(e) {
+  if (e.target === this) closeLb();
+});
+
+/* ─── CHAT ─── */
+let chatOpen = false;
+let curDm = null;
+const replies = ['😄 Que ótimo!', 'Verdade! 💯', 'kkkkk demais!', 'Saudades! 🥰', 'Combinado! 🤙', 'Que bom! ☺️', '😂 Minha vida!', 'Conta mais! 👀'];
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chatPanel').classList.toggle('open', chatOpen);
+  if (chatOpen && notifOpen) { notifOpen = false; document.getElementById('notifPanel').classList.remove('open'); }
+}
+function showContacts(tab) {
+  document.querySelectorAll('.cp-tab').forEach(t => t.classList.remove('on'));
+  if (tab) tab.classList.add('on');
+  document.getElementById('contactList').style.display = 'block';
+  document.getElementById('msgArea').classList.remove('open');
+  document.getElementById('cpTitle').textContent = 'Mensagens';
+  curDm = null;
+}
+function switchTab(tab) {
+  document.querySelectorAll('.cp-tab').forEach(t => t.classList.remove('on'));
+  tab.classList.add('on');
+}
+function filterContacts(v) {
+  document.querySelectorAll('.contact').forEach(c => {
+    const nm = c.dataset.name || '';
+    c.style.display = nm.toLowerCase().includes(v.toLowerCase()) ? 'flex' : 'none';
+  });
+}
+function openDm(name, avClass, status, history) {
+  curDm = name;
+  document.getElementById('contactList').style.display = 'none';
+  const ma = document.getElementById('msgArea');
+  ma.classList.add('open');
+  document.getElementById('cpTitle').textContent = name;
+  document.getElementById('dmName').textContent = name;
+  document.getElementById('dmSt').textContent = '● ' + status;
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+  (history || ['Olá! 👋']).forEach((m, i) => {
+    const d = document.createElement('div');
+    d.className = 'msg ' + (i % 2 === 0 ? 'them' : 'me');
+    d.innerHTML = escHtml(m) + '<div class="msg-t">' + (i % 2 === 0 ? name : 'Você') + '</div>';
+    msgs.appendChild(d);
+  });
+  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('msgInp').focus();
+}
+function backToContacts() { showContacts(); }
+function sendMsg() {
+  const inp = document.getElementById('msgInp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  const msgs = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.className = 'msg me';
+  d.innerHTML = escHtml(txt) + '<div class="msg-t">Você · agora</div>';
+  msgs.appendChild(d);
+  inp.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.innerHTML = '<div class="td"></div><div class="td"></div><div class="td"></div>';
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  setTimeout(() => {
+    typing.remove();
+    const r = document.createElement('div');
+    r.className = 'msg them';
+    r.innerHTML = escHtml(replies[Math.floor(Math.random() * replies.length)])
+      + '<div class="msg-t">' + (curDm || '') + '</div>';
+    msgs.appendChild(r);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900 + Math.random() * 700);
+}
+
+/* ─── UTIL ─── */
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ─── KEYBOARD ─── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeLb(); }
+});
+</script>
+</body>
+</html>
