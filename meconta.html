@@ -1488,7 +1488,7 @@ body {
   <div class="chat-panel" id="chatPanel">
     <div class="cp-head">
       <span>💬</span>
-      <span class="cp-title" id="cpTitle">Mensagens</span>
+      <span class="cp-title" id="cpTitle">Mensagens de demonstração</span>
       <div class="cp-acts">
         <button class="cp-act" onclick="toast('✏️ Nova conversa')">✏️</button>
         <button class="cp-act" onclick="toggleChat()">✕</button>
@@ -1501,27 +1501,27 @@ body {
     </div>
     <div class="cp-search"><input type="text" placeholder="🔍 Buscar conversa…" oninput="filterContacts(this.value)"></div>
     <div class="contact-list" id="contactList">
-      <div class="contact" data-name="Marcos" onclick="openDm('Marcos','avc','Online agora',['Vai aparecer no sábado?? 🎉','O aniversário vai ser incrível!'])">
+      <div class="contact" data-name="Marcos" onclick="openDm('Marcos',['Vai aparecer no sábado?? 🎉','O aniversário vai ser incrível!'])">
         <div class="c-av-wrap"><div class="av avc" style="width:36px;height:36px;font-size:.86rem">M</div><div class="c-online"></div></div>
         <div class="c-inf"><div class="c-nm">Marcos Vinicius</div><div class="c-prev">Vai aparecer no sábado?? 🎉</div></div>
         <div class="c-meta"><div class="c-time">há 2h</div><div class="c-unread">2</div></div>
       </div>
-      <div class="contact" data-name="Luísa" onclick="openDm('Luísa','avb','Online agora',['Obrigada pela curtida! 😊','Precisamos nos ver logo!'])">
+      <div class="contact" data-name="Luísa" onclick="openDm('Luísa',['Obrigada pela curtida! 😊','Precisamos nos ver logo!'])">
         <div class="c-av-wrap"><div class="av avb" style="width:36px;height:36px;font-size:.86rem">L</div><div class="c-online"></div></div>
         <div class="c-inf"><div class="c-nm">Luísa Mendonça</div><div class="c-prev">Obrigada pela curtida! 😊</div></div>
         <div class="c-meta"><div class="c-time">há 5h</div></div>
       </div>
-      <div class="contact" data-name="Rafael" onclick="openDm('Rafael','avd','Visto há 1h',['kkkkk verdade demais!','Esse me conta tá incrível!'])">
+      <div class="contact" data-name="Rafael" onclick="openDm('Rafael',['kkkkk verdade demais!','Esse me conta tá incrível!'])">
         <div class="c-av-wrap"><div class="av avd" style="width:36px;height:36px;font-size:.86rem">R</div></div>
         <div class="c-inf"><div class="c-nm">Rafael Borges</div><div class="c-prev">kkkkk verdade demais!</div></div>
         <div class="c-meta"><div class="c-time">ontem</div></div>
       </div>
-      <div class="contact" data-name="Julia" onclick="openDm('Julia','ave','Visto há 3h',['Era tão bom mesmo 😭','Vamos combinar de sair!'])">
+      <div class="contact" data-name="Julia" onclick="openDm('Julia',['Era tão bom mesmo 😭','Vamos combinar de sair!'])">
         <div class="c-av-wrap"><div class="av ave" style="width:36px;height:36px;font-size:.86rem">J</div></div>
         <div class="c-inf"><div class="c-nm">Julia Ramos</div><div class="c-prev">Era tão bom mesmo 😭</div></div>
         <div class="c-meta"><div class="c-time">ontem</div></div>
       </div>
-      <div class="contact" data-name="Pedro" onclick="openDm('Pedro','avf','Visto há 2d',['Precisamos marcar um café!','Tô com saudades!'])">
+      <div class="contact" data-name="Pedro" onclick="openDm('Pedro',['Precisamos marcar um café!','Tô com saudades!'])">
         <div class="c-av-wrap"><div class="av avf" style="width:36px;height:36px;font-size:.86rem">P</div></div>
         <div class="c-inf"><div class="c-nm">Pedro Almeida</div><div class="c-prev">Precisamos marcar um café!</div></div>
         <div class="c-meta"><div class="c-time">há 2d</div></div>
@@ -1742,6 +1742,7 @@ document.getElementById('lb').addEventListener('click', function(e) {
 /* ─── CHAT ─── */
 let chatOpen = false;
 let curDm = null;
+const conversations = new Map();
 const replies = ['😄 Que ótimo!', 'Verdade! 💯', 'kkkkk demais!', 'Saudades! 🥰', 'Combinado! 🤙', 'Que bom! ☺️', '😂 Minha vida!', 'Conta mais! 👀'];
 
 function toggleChat() {
@@ -1754,7 +1755,8 @@ function showContacts(tab) {
   if (tab) tab.classList.add('on');
   document.getElementById('contactList').style.display = 'block';
   document.getElementById('msgArea').classList.remove('open');
-  document.getElementById('cpTitle').textContent = 'Mensagens';
+  document.getElementById('cpTitle').textContent = 'Mensagens de demonstração';
+  document.getElementById('msgInp').value = '';
   curDm = null;
 }
 function switchTab(tab) {
@@ -1767,52 +1769,58 @@ function filterContacts(v) {
     c.style.display = nm.toLowerCase().includes(v.toLowerCase()) ? 'flex' : 'none';
   });
 }
-function openDm(name, avClass, status, history) {
+function appendDmMessage(name, message) {
+  const messages = document.getElementById('messages');
+  const bubble = document.createElement('div');
+  bubble.className = message.mine ? 'msg me' : 'msg them';
+  bubble.textContent = message.text;
+  const author = document.createElement('div');
+  author.className = 'msg-t';
+  author.textContent = message.mine ? 'Você' : name;
+  bubble.appendChild(author);
+  messages.appendChild(bubble);
+  messages.scrollTop = messages.scrollHeight;
+}
+function openDm(name, history = ['Olá! 👋']) {
+  if (curDm !== name) document.getElementById('msgInp').value = '';
   curDm = name;
   document.getElementById('contactList').style.display = 'none';
-  const ma = document.getElementById('msgArea');
-  ma.classList.add('open');
+  document.getElementById('msgArea').classList.add('open');
   document.getElementById('cpTitle').textContent = name;
   document.getElementById('dmName').textContent = name;
-  document.getElementById('dmSt').textContent = '● ' + status;
-  const msgs = document.getElementById('messages');
-  msgs.innerHTML = '';
-  (history || ['Olá! 👋']).forEach((m, i) => {
-    const d = document.createElement('div');
-    d.className = 'msg ' + (i % 2 === 0 ? 'them' : 'me');
-    d.innerHTML = escHtml(m) + '<div class="msg-t">' + (i % 2 === 0 ? name : 'Você') + '</div>';
-    msgs.appendChild(d);
-  });
-  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('dmSt').textContent = 'Conversa de demonstração';
+  if (!conversations.has(name)) {
+    conversations.set(name, history.map((text, i) => ({ text, mine: i % 2 === 1 })));
+  }
+  document.getElementById('messages').replaceChildren();
+  conversations.get(name).forEach(message => appendDmMessage(name, message));
   document.getElementById('msgInp').focus();
 }
 function backToContacts() { showContacts(); }
 function sendMsg() {
-  const inp = document.getElementById('msgInp');
-  const txt = inp.value.trim();
-  if (!txt) return;
-  const msgs = document.getElementById('messages');
-  const d = document.createElement('div');
-  d.className = 'msg me';
-  d.innerHTML = escHtml(txt) + '<div class="msg-t">Você · agora</div>';
-  msgs.appendChild(d);
-  inp.value = '';
-  msgs.scrollTop = msgs.scrollHeight;
+  const input = document.getElementById('msgInp');
+  const text = input.value.trim();
+  const recipient = curDm;
+  if (!recipient || !text) return;
+
+  const messages = document.getElementById('messages');
+  const conversation = conversations.get(recipient);
+  const outgoing = { text, mine: true };
+  conversation.push(outgoing);
+  appendDmMessage(recipient, outgoing);
+  input.value = '';
 
   const typing = document.createElement('div');
   typing.className = 'typing';
   typing.innerHTML = '<div class="td"></div><div class="td"></div><div class="td"></div>';
-  msgs.appendChild(typing);
-  msgs.scrollTop = msgs.scrollHeight;
+  messages.appendChild(typing);
+  messages.scrollTop = messages.scrollHeight;
 
   setTimeout(() => {
     typing.remove();
-    const r = document.createElement('div');
-    r.className = 'msg them';
-    r.innerHTML = escHtml(replies[Math.floor(Math.random() * replies.length)])
-      + '<div class="msg-t">' + (curDm || '') + '</div>';
-    msgs.appendChild(r);
-    msgs.scrollTop = msgs.scrollHeight;
+    const reply = { text: replies[Math.floor(Math.random() * replies.length)], mine: false };
+    conversation.push(reply);
+    if (curDm === recipient) appendDmMessage(recipient, reply);
   }, 900 + Math.random() * 700);
 }
 
